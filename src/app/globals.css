@@ -1,0 +1,291 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Light theme - warm POS feel (Petpooja-inspired) */
+  --primary-50: #fef7ee;
+  --primary-100: #fdedd6;
+  --primary-200: #f9d7ad;
+  --primary-300: #f5ba79;
+  --primary-400: #f09443;
+  --primary-500: #ec761e;
+  --primary-600: #dd5c14;
+  --primary-700: #b74412;
+  --primary-800: #923617;
+  --primary-900: #762f16;
+  --surface: #ffffff;
+  --surface-elevated: #fafafa;
+  --surface-muted: #f5f5f5;
+  --border: #e5e7eb;
+  --muted: #6b7280;
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  --shadow-dropdown: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+}
+
+.dark {
+  --primary-50: #431407;
+  --primary-100: #5c1d0e;
+  --primary-200: #7c2d12;
+  --primary-300: #9a3412;
+  --primary-400: #c2410c;
+  --primary-500: #ea580c;
+  --primary-600: #f97316;
+  --primary-700: #fb923c;
+  --primary-800: #fdba74;
+  --primary-900: #fed7aa;
+  --surface: #0f0f0f;
+  --surface-elevated: #1a1a1a;
+  --surface-muted: #262626;
+  --border: #2d2d2d;
+  --muted: #a3a3a3;
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.2);
+  --shadow-dropdown: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+}
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-[var(--surface)] text-gray-900 dark:text-gray-100 antialiased;
+  }
+
+  /* Responsive typography */
+  h1 {
+    @apply text-2xl sm:text-3xl md:text-4xl font-bold;
+  }
+
+  h2 {
+    @apply text-xl sm:text-2xl md:text-3xl font-semibold;
+  }
+
+  h3 {
+    @apply text-lg sm:text-xl md:text-2xl font-semibold;
+  }
+
+  p {
+    @apply text-sm sm:text-base md:text-base;
+  }
+}
+
+@layer components {
+  /* Kiosk touch targets - minimum 48px on all devices */
+  .kiosk-tap {
+    @apply min-h-[48px] min-w-[48px] flex items-center justify-center;
+  }
+
+  /* Responsive container */
+  .kiosk-container {
+    @apply w-full max-w-2xl sm:max-w-3xl md:max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto px-3 sm:px-4 md:px-6;
+  }
+
+  /* Safe padding for notch/safe areas */
+  .safe-padding {
+    @apply pt-safe-top pb-safe-bottom pl-safe-left pr-safe-right;
+  }
+
+  /* Responsive button group */
+  .button-group {
+    @apply flex flex-col sm:flex-row gap-2 sm:gap-3 md:gap-4;
+  }
+
+  /* Responsive card grid */
+  .card-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6;
+  }
+
+  /* Responsive text sizes */
+  .text-heading-lg {
+    @apply text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold;
+  }
+
+  .text-heading-md {
+    @apply text-lg sm:text-xl md:text-2xl font-semibold;
+  }
+
+  .text-heading-sm {
+    @apply text-base sm:text-lg md:text-xl font-semibold;
+  }
+
+  .text-body-lg {
+    @apply text-base sm:text-lg;
+  }
+
+  .text-body-md {
+    @apply text-sm sm:text-base;
+  }
+
+  .text-body-sm {
+    @apply text-xs sm:text-sm;
+  }
+
+  .text-label {
+    @apply text-xs md:text-sm font-medium uppercase tracking-widest;
+  }
+}
+
+/* Swipe CTA animation */
+@keyframes swipe-arrow {
+  0%, 100% { transform: translateX(0); opacity: 1; }
+  50% { transform: translateX(14px); opacity: 0.7; }
+}
+
+@keyframes swipe-shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes button-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(249, 115, 22, 0); }
+}
+
+@keyframes button-shimmer {
+  0% { 
+    background-position: -1000px 0;
+  }
+  100% { 
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes progress-glow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes success-check {
+  0% { 
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+  50% { 
+    transform: scale(1.1) rotate(0deg);
+  }
+  100% { 
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes complete-ripple {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0;
+  }
+}
+
+@keyframes slide-in-feedback {
+  0% { 
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-swipe-arrow {
+  animation: swipe-arrow 1.6s ease-in-out infinite;
+}
+
+.animate-swipe-shine {
+  animation: swipe-shine 2s ease-in-out infinite;
+}
+
+.animate-button-pulse {
+  animation: button-pulse 2s infinite;
+}
+
+.animate-button-shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+  background-size: 1000px 100%;
+  animation: button-shimmer 2s infinite;
+}
+
+.animate-progress-glow {
+  animation: progress-glow 1.5s ease-in-out infinite;
+}
+
+.animate-success-check {
+  animation: success-check 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.animate-complete-ripple {
+  animation: complete-ripple 0.6s ease-out forwards;
+}
+
+.animate-slide-in-feedback {
+  animation: slide-in-feedback 0.4s ease-out forwards;
+}
+
+/* Release to order - text pulse when dragging */
+@keyframes release-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+/* Order Placed - success pop animation */
+@keyframes order-placed-pop {
+  0% { opacity: 0; transform: scale(0.8) rotate(-10deg); }
+  50% { transform: scale(1.12) rotate(5deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+.animate-release-pulse {
+  animation: release-pulse 0.7s ease-in-out infinite;
+}
+
+.animate-order-placed {
+  animation: order-placed-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Hide scrollbar but keep scroll behavior */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Responsive utilities */
+@media (max-width: 640px) {
+  /* Mobile specific */
+  .mobile-only {
+    @apply flex;
+  }
+  .hidden-mobile {
+    @apply hidden;
+  }
+}
+
+@media (min-width: 641px) {
+  .mobile-only {
+    @apply hidden;
+  }
+  .hidden-mobile {
+    @apply flex;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  button,
+  a[role="button"],
+  [role="button"] {
+    @apply min-h-[44px];
+  }
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
