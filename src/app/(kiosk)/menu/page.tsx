@@ -26,6 +26,7 @@ export default function MenuPage() {
   const [activeFilter, setActiveFilter] = useState<"all" | "non-veg" | "veg">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [showHomeConfirm, setShowHomeConfirm] = useState(false);
   const ADDON_PRICE = 99;
   const ADDONS = [
     { name: "Extra Cheese", price: ADDON_PRICE },
@@ -81,6 +82,12 @@ export default function MenuPage() {
     const generatedOrderId = `#${Math.floor(Math.random() * 900000) + 100000}`;
     useKioskStore.getState().setOrderId(generatedOrderId);
     router.push("/payment");
+  };
+
+  const handleBackToHome = () => {
+    useCartStore.getState().clearCart();
+    setShowHomeConfirm(false);
+    router.push("/");
   };
 
   const handleAddClick = (item: typeof kioskMenuItems[0]) => {
@@ -406,17 +413,6 @@ export default function MenuPage() {
                 >
                   {items.reduce((s, i) => s + i.quantity, 0)} ITEMS
                 </span>
-                <button
-                  type="button"
-                  onClick={() => setShowClearConfirm(true)}
-                  className={cn(
-                    "rounded-lg px-2.5 sm:px-3 py-1 text-2xs sm:text-xs font-medium shrink-0",
-                    isDark ? "bg-orange-500 text-white" : "bg-orange-200 text-orange-800"
-                  )}
-                  title="Clear your order"
-                >
-                  Clear
-                </button>
               </div>
             </div>
           </div>
@@ -514,6 +510,19 @@ export default function MenuPage() {
             >
               Proceed to Pay ₹{total.toFixed(0)}
             </Link>
+
+            <button
+              type="button"
+              onClick={() => setShowHomeConfirm(true)}
+              className={cn(
+                "mt-2 w-full rounded-lg sm:rounded-xl py-2.5 sm:py-3 text-center text-xs sm:text-sm font-medium transition-colors kiosk-tap",
+                isDark
+                  ? "bg-zinc-800 text-gray-400 hover:bg-zinc-700"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              )}
+            >
+              Back to Home
+            </button>
           </div>
         </div>
       )}
@@ -562,6 +571,53 @@ export default function MenuPage() {
                 className="flex-1 rounded-lg sm:rounded-xl px-4 py-3 font-medium bg-orange-500 text-white hover:bg-orange-600 transition-colors kiosk-tap"
               >
                 Yes, Empty
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Back to home confirmation modal */}
+      {showHomeConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none">
+          <div
+            className="absolute inset-0 bg-black/50 pointer-events-auto"
+            onClick={() => setShowHomeConfirm(false)}
+            aria-hidden
+          />
+          <div
+            className={cn(
+              "relative w-full max-w-sm rounded-[18px] overflow-hidden shadow-xl pointer-events-auto",
+              isDark ? "bg-zinc-900 border border-zinc-700" : "bg-white border border-gray-100"
+            )}
+          >
+            <div className={cn("p-6", isDark ? "border-b border-zinc-700" : "border-b border-gray-100")}>
+              <h3 className={cn("text-lg font-bold", isDark ? "text-white" : "text-gray-900")}>
+                Go Back to Home?
+              </h3>
+              <p className={cn("text-sm mt-2", isDark ? "text-gray-400" : "text-gray-600")}>
+                Your current order with {items.reduce((s, i) => s + i.quantity, 0)} items will be cleared. Continue?
+              </p>
+            </div>
+            <div className="flex gap-3 p-6">
+              <button
+                type="button"
+                onClick={() => setShowHomeConfirm(false)}
+                className={cn(
+                  "flex-1 rounded-lg sm:rounded-xl px-4 py-3 font-medium transition-colors kiosk-tap",
+                  isDark
+                    ? "bg-zinc-800 text-white hover:bg-zinc-700"
+                    : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                )}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleBackToHome}
+                className="flex-1 rounded-lg sm:rounded-xl px-4 py-3 font-medium bg-orange-500 text-white hover:bg-orange-600 transition-colors kiosk-tap"
+              >
+                Yes, Go Home
               </button>
             </div>
           </div>
