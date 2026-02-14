@@ -169,7 +169,7 @@ export default function KioskHomePage() {
   const progressPercent = maxDrag > 0 ? Math.round((dragOffset / maxDrag) * 100) : 0;
   
   const swipeText = isComplete 
-    ? "Order Confirmed! 🎉" 
+    ? "Order Now! 🎉" 
     : isSwiping 
       ? `Release to Order (${progressPercent}%)`
       : "Swipe right to order";
