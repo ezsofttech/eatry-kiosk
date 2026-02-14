@@ -69,8 +69,9 @@ export default function MenuPage() {
       searchQuery.trim() === "" ||
       m.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  const firstTwoRowsItems = filteredItems.slice(0, ITEMS_PER_TWO_ROWS);
-  const restItems = filteredItems.slice(ITEMS_PER_TWO_ROWS);
+  
+  // Get current category name
+  const activeCategoryName = kioskCategories.find((cat) => cat.id === activeCategory)?.name || "Items";
   const subtotal = getSubtotal();
   const tax = getTax(TAX_RATE);
   const total = getTotal(TAX_RATE);
@@ -205,7 +206,7 @@ export default function MenuPage() {
                   activeFilter === "all" ? "bg-orange-500 text-white" : isDark ? "bg-zinc-700 text-white hover:bg-zinc-600" : "bg-gray-200 text-gray-900 hover:bg-gray-300"
                 )}
               >
-                All Burger
+                All {activeCategoryName}
               </button>
               <button
                 type="button"
@@ -219,6 +220,7 @@ export default function MenuPage() {
                   <span className={cn("w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full", activeFilter === "non-veg" ? "bg-white" : "bg-red-500")} />
                 </span>
                 <span className="hidden sm:inline">Non-Veg</span>
+                <span className="sm:hidden">NV</span>
               </button>
               <button
                 type="button"
@@ -232,131 +234,57 @@ export default function MenuPage() {
                   <span className={cn("w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full", activeFilter === "veg" ? "bg-white" : "bg-green-500")} />
                 </span>
                 <span className="hidden sm:inline">Veg</span>
+                <span className="sm:hidden">V</span>
               </button>
-            </div>
-
-            {/* First two rows: fixed, always visible - compact cards for 2 rows to fit */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-2 md:gap-3 mb-2 sm:mb-3 laptop:mb-4">
-              {firstTwoRowsItems.map((item) => {
-                const qty = getQuantity(item.id);
-                return (
-                  <div
-                    key={item.id}
-                    className={cn(
-                      "rounded-lg sm:rounded-2xl overflow-hidden border",
-                      isDark ? "bg-zinc-800 border-zinc-700" : "bg-white border-zinc-200"
-                    )}
-                  >
-                    <div className="relative aspect-[4/3] bg-orange-500/20 overflow-hidden rounded-t-lg sm:rounded-t-2xl">
-                      <Image
-                        src={item.image ?? "/assets/images/food-placeholder.svg"}
-                        alt={item.name}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                      />
-                      {item.bestSeller && (
-                        <span className="absolute top-1 left-1 sm:top-1.5 sm:left-1.5 rounded-full bg-red-500 px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-[10px] font-medium text-white">
-                          Best seller
-                        </span>
-                      )}
-                    </div>
-                    <div className="p-2 sm:p-3">
-                      <p className="text-xs sm:text-sm font-semibold truncate">{item.name}</p>
-                      <p className="text-orange-500 font-bold mt-0.5 text-xs sm:text-sm">₹{item.price.toFixed(2)}</p>
-                      {qty === 0 ? (
-                        <button
-                          type="button"
-                          onClick={() => handleAddClick(item)}
-                          className="mt-1.5 w-full rounded-lg bg-orange-500 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-white hover:bg-orange-600 kiosk-tap"
-                        >
-                          + ADD
-                        </button>
-                      ) : (
-                        <div className="flex items-center justify-center gap-1 sm:gap-1.5 mt-1.5 kiosk-tap">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const first = items.find((i) => i.menuItemId === item.id);
-                              if (first) updateQuantity(first.id, first.quantity - 1);
-                            }}
-                            className="rounded-lg bg-orange-500 p-1 text-white"
-                            aria-label="Decrease quantity"
-                          >
-                            <Minus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                          </button>
-                          <span className="font-semibold w-6 text-center text-xs sm:text-sm">{qty}</span>
-                          <button
-                            type="button"
-                            onClick={() => handleAddClick(item)}
-                            className="rounded-lg bg-orange-500 p-1 text-white"
-                            aria-label="Increase quantity"
-                          >
-                            <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
             </div>
           </div>
 
-          {/* Scrollable: remaining menu cards - horizontal scroll, 3 columns visible */}
-          <div className="flex-1 min-h-[200px] overflow-x-auto overflow-y-hidden scrollbar-hide pb-2 mb-2">
+          {/* Scrollable: All menu items in one grid */}
+          <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide pb-4">
             {filteredItems.length === 0 ? (
               <div className={cn("flex flex-col items-center justify-center py-16 text-center", isDark ? "text-gray-400" : "text-gray-500")}>
                 <p className="text-lg font-medium">No items match this filter</p>
                 <p className="text-sm mt-1">Try a different category or filter</p>
               </div>
-            ) : restItems.length > 0 ? (
-              <div
-                className="grid gap-2 md:gap-3 pr-2"
-                style={{
-                  gridTemplateRows: "repeat(2, auto)",
-                  gridAutoFlow: "column",
-                  gridAutoColumns: "minmax(200px, 220px)",
-                  width: "max-content",
-                }}
-              >
-                {restItems.map((item) => {
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-2 md:gap-3">
+                {filteredItems.map((item) => {
                   const qty = getQuantity(item.id);
                   return (
                     <div
                       key={item.id}
                       className={cn(
-                        "rounded-2xl overflow-hidden border",
+                        "rounded-lg sm:rounded-2xl overflow-hidden border",
                         isDark ? "bg-zinc-800 border-zinc-700" : "bg-white border-zinc-200"
                       )}
                     >
-                      <div className="relative aspect-[4/3] bg-orange-500/20 overflow-hidden rounded-t-2xl">
+                      <div className="relative aspect-[4/3] bg-orange-500/20 overflow-hidden rounded-t-lg sm:rounded-t-2xl">
                         <Image
                           src={item.image ?? "/assets/images/food-placeholder.svg"}
                           alt={item.name}
                           fill
                           className="object-cover"
-                          sizes="(max-width: 768px) 50vw, (max-width: 1535px) 33vw, 25vw"
+                          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                         />
                         {item.bestSeller && (
-                          <span className="absolute top-1.5 left-1.5 rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-medium text-white">
+                          <span className="absolute top-1 left-1 sm:top-1.5 sm:left-1.5 rounded-full bg-red-500 px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-[10px] font-medium text-white">
                             Best seller
                           </span>
                         )}
                       </div>
-                      <div className="p-3">
-                        <p className="text-sm lg:text-base font-semibold truncate">{item.name}</p>
-                        <p className="text-orange-500 font-bold mt-0.5 text-sm lg:text-base">₹{item.price.toFixed(2)}</p>
+                      <div className="p-2 sm:p-3">
+                        <p className="text-xs sm:text-sm font-semibold truncate">{item.name}</p>
+                        <p className="text-orange-500 font-bold mt-0.5 text-xs sm:text-sm">₹{item.price.toFixed(2)}</p>
                         {qty === 0 ? (
                           <button
                             type="button"
                             onClick={() => handleAddClick(item)}
-                            className="mt-1.5 w-full rounded-lg bg-orange-500 py-2 text-sm font-medium text-white hover:bg-orange-600"
+                            className="mt-1.5 w-full rounded-lg bg-orange-500 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-white hover:bg-orange-600 kiosk-tap"
                           >
                             + ADD
                           </button>
                         ) : (
-                          <div className="flex items-center justify-center gap-1.5 mt-1.5">
+                          <div className="flex items-center justify-center gap-1 sm:gap-1.5 mt-1.5 kiosk-tap">
                             <button
                               type="button"
                               onClick={() => {
@@ -364,16 +292,18 @@ export default function MenuPage() {
                                 if (first) updateQuantity(first.id, first.quantity - 1);
                               }}
                               className="rounded-lg bg-orange-500 p-1 text-white"
+                              aria-label="Decrease quantity"
                             >
-                              <Minus className="w-3.5 h-3.5" />
+                              <Minus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                             </button>
-                            <span className="font-semibold w-6 text-center text-sm">{qty}</span>
+                            <span className="font-semibold w-6 text-center text-xs sm:text-sm">{qty}</span>
                             <button
                               type="button"
                               onClick={() => handleAddClick(item)}
                               className="rounded-lg bg-orange-500 p-1 text-white"
+                              aria-label="Increase quantity"
                             >
-                              <Plus className="w-3.5 h-3.5" />
+                              <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                             </button>
                           </div>
                         )}
@@ -382,7 +312,7 @@ export default function MenuPage() {
                   );
                 })}
               </div>
-            ) : null}
+            )}
           </div>
         </div>
       </div>
