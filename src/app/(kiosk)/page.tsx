@@ -226,25 +226,10 @@ export default function KioskHomePage() {
           {/* Progress background glow */}
           {isSwiping && (
             <div 
-              className="absolute left-0 top-0 h-full bg-gradient-to-r from-orange-400/20 via-orange-500/20 to-transparent animate-progress-glow"
+              className="absolute left-0 top-0 h-full bg-gradient-to-r from-orange-500/80 via-orange-500/80 to-transparent animate-progress-glow"
               style={{ width: `${progressPercent}%` }}
             />
           )}
-
-          {/* Gradient fill - grows to full track width when complete */}
-          <div
-            className={cn(
-              "absolute left-0 top-0 h-full z-0 transition-all",
-              isComplete ? "rounded-full" : "rounded-l-full rounded-r-lg"
-            )}
-            style={{
-              width: fillWidth,
-              background: isComplete 
-                ? "linear-gradient(90deg, rgb(34 197 94 / 0.5), rgb(22 163 74 / 0.7))"
-                : "linear-gradient(90deg, rgb(249 115 22 / 0.3), rgb(234 88 12 / 0.5))",
-              transition: isSwiping ? "none" : "width 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94), background 0.3s",
-            }}
-          />
 
           {/* Draggable button - horizontal only */}
           <div
