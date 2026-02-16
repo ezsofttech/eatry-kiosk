@@ -13,12 +13,26 @@ import { cn } from "@/lib/utils";
 export default function SuccessPage() {
   const router = useRouter();
   const [countdown, setCountdown] = useState(15);
+  const [mounted, setMounted] = useState(false);
+  const [clientDateStr, setClientDateStr] = useState("");
   const { orderId, paymentMethod, resetOrder } = useKioskStore();
   const { items, orderType, tableNumber, clearCart } = useCartStore();
   const { addOrder } = useKitchenStore();
   const { resolved } = useThemeStore();
   const isDark = resolved === "dark";
   const sentToKitchen = useRef(false);
+  const paymentRef = useRef<string>("");
+
+  useEffect(() => {
+    setMounted(true);
+    paymentRef.current = Math.floor(Math.random() * 1e13).toString();
+    const now = new Date();
+    setClientDateStr(
+      now.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }) +
+        " " +
+        now.toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" })
+    );
+  }, []);
 
   useEffect(() => {
     if (sentToKitchen.current) return;
@@ -51,9 +65,6 @@ export default function SuccessPage() {
     router.replace("/");
   };
 
-  const now = new Date();
-  const dateStr = now.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }) + " " + now.toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" });
-
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-180px)] px-3 sm:px-4 pt-12 sm:pt-16 md:pt-20 pb-16 sm:pb-24">
       <div className="rounded-full border-3 sm:border-4 border-yellow-400 p-3 sm:p-4 mb-4 sm:mb-6">
@@ -69,15 +80,17 @@ export default function SuccessPage() {
         )}
       >
         <p className="text-2xs sm:text-xs text-gray-500 uppercase tracking-wider mb-1">ORDER NUMBER</p>
-        <p className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">{orderId || "#201"}</p>
+        <p className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4" suppressHydrationWarning>
+          {mounted ? (orderId || "#201") : "—"}
+        </p>
         <hr className="border-zinc-600 mb-3 sm:mb-4" />
         <div className="grid grid-cols-2 gap-x-3 sm:gap-x-4 gap-y-2 text-xs sm:text-sm">
           <span className="text-gray-500">Date</span>
-          <span>{dateStr}</span>
+          <span suppressHydrationWarning>{mounted ? clientDateStr : "—"}</span>
           <span className="text-gray-500">Payment Method</span>
-          <span className="capitalize">{paymentMethod || "UPI"}</span>
+          <span className="capitalize">{mounted ? (paymentMethod || "UPI") : "—"}</span>
           <span className="text-gray-500">Payment Reference</span>
-          <span className="truncate">{Math.floor(Math.random() * 1e13).toString()}</span>
+          <span className="truncate" suppressHydrationWarning>{mounted ? paymentRef.current : "—"}</span>
         </div>
       </div>
       <p className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-500 mb-4 sm:mb-6">
