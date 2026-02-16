@@ -81,13 +81,14 @@ function KioskLayoutInner({
     <div
       className={cn(
         "min-h-screen relative",
-        isMenuPage ? "h-screen overflow-hidden" : "overflow-auto",
+        isMenuPage ? "h-screen overflow-hidden flex flex-col" : "overflow-auto",
         isDark ? "text-white" : "text-gray-900",
         className
       )}
       style={{
         backgroundColor: isDark ? "#000000" : "#F5F5F5",
       }}
+      onContextMenu={(e) => e.preventDefault()}
     >
       {/* Background image: use img so it always renders; in dark mode invert so it's visible on black */}
       <div
@@ -107,7 +108,7 @@ function KioskLayoutInner({
         />
       </div>
       {showLanguage && <HeaderIcons />}
-      <main className="relative z-10">{children}</main>
+      <main className={cn("relative z-10", isMenuPage && "flex-1 min-h-0 flex flex-col")}>{children}</main>
       {showFooter && (
         <footer className="relative z-10 flex flex-col items-center justify-center gap-2">
           <Image src="/assets/images/logo.svg" alt="Eatry Cloud" width={48} height={48} />

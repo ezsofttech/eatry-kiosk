@@ -48,7 +48,7 @@ export default function PaymentPage() {
   if (total <= 0) return null;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-180px)] px-3 sm:px-4 pt-12 sm:pt-16 md:pt-20 pb-16 sm:pb-20 md:pb-24">
+    <div className="flex flex-col items-center justify-center min-h-screen px-3 sm:px-4 pt-16 sm:pt-16 md:pt-20 pb-12 sm:pb-20 md:pb-24">
       <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-6 sm:mb-8">
         How would you like to pay?
       </h1>

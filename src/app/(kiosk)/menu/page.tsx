@@ -131,9 +131,9 @@ export default function MenuPage() {
   if (!orderType) return null;
 
   return (
-    <div className="flex flex-col lg:flex-row h-[calc(100vh-6rem)] min-h-0 pt-10 sm:pt-12 md:pt-14 laptop:pt-14 overflow-hidden">
+    <div className="flex flex-1 flex-col lg:flex-row min-h-0 pt-10 sm:pt-12 md:pt-14 laptop:pt-14 overflow-hidden">
       {/* Left: Search + Categories + Filters (fixed) + Menu grid (scrollable) */}
-      <div className="flex-1 flex flex-col min-h-0 p-2 sm:p-3 md:p-4 lg:p-4 laptop:p-5 overflow-hidden">
+      <div className="flex-1 flex flex-col min-h-0 p-2 sm:p-3 md:px-4 md:pt-4 md:pb-0 lg:px-4 lg:pt-4 lg:pb-0 laptop:px-5 laptop:pt-5 laptop:pb-0 overflow-hidden">
         <div className="max-w-6xl mx-auto flex flex-col flex-1 min-h-0 w-full">
           {/* Fixed: Search, Categories, Filters */}
           <div className="shrink-0">
@@ -220,7 +220,7 @@ export default function MenuPage() {
                   <span className={cn("w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full", activeFilter === "non-veg" ? "bg-white" : "bg-red-500")} />
                 </span>
                 <span className="hidden sm:inline">Non-Veg</span>
-                <span className="sm:hidden">NV</span>
+                <span className="sm:hidden">Non-Veg</span>
               </button>
               <button
                 type="button"
@@ -234,13 +234,13 @@ export default function MenuPage() {
                   <span className={cn("w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full", activeFilter === "veg" ? "bg-white" : "bg-green-500")} />
                 </span>
                 <span className="hidden sm:inline">Veg</span>
-                <span className="sm:hidden">V</span>
+                <span className="sm:hidden">Veg</span>
               </button>
             </div>
           </div>
 
           {/* Scrollable: All menu items in one grid */}
-          <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide pb-4">
+          <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
             {filteredItems.length === 0 ? (
               <div className={cn("flex flex-col items-center justify-center py-16 text-center", isDark ? "text-gray-400" : "text-gray-500")}>
                 <p className="text-lg font-medium">No items match this filter</p>
