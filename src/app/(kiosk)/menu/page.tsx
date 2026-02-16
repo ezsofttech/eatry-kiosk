@@ -166,14 +166,14 @@ export default function MenuPage() {
                 </button>
               )}
             </div>
-            <div className="flex gap-2 sm:gap-3 laptop:gap-2 overflow-x-auto scrollbar-hide pb-2 sm:pb-3 laptop:pb-2 pr-2 -mr-2">
+            <div className="flex gap-2 sm:gap-3 laptop:gap-2 overflow-x-auto scrollbar-hide pb-2 sm:pb-3 laptop:pb-2 pl-0.5 pr-4">
               {kioskCategories.map((cat) => (
                 <button
                   key={cat.id}
                   type="button"
                   onClick={() => setActiveCategory(cat.id)}
                   className={cn(
-                    "relative flex flex-col items-center shrink-0 rounded-full border-2 p-3 sm:p-3 sm:px-6 transition-colors text-xs",
+                    "relative flex flex-col items-center justify-center shrink-0 rounded-full border-2 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 p-2 transition-colors text-xs",
                     activeCategory === cat.id
                       ? "border-orange-500 bg-orange-500/10"
                       : isDark ? "border-zinc-600" : "border-zinc-300"
@@ -184,12 +184,12 @@ export default function MenuPage() {
                     alt={cat.name}
                     width={36}
                     height={36}
-                    className="mb-0.5 shrink-0 w-6 h-6 sm:w-9 sm:h-9 md:w-10 md:h-10"
+                    className="shrink-0 w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10"
                   />
                   {activeCategory === cat.id && (
-                    <span className="absolute -right-0.5 w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-orange-500 flex items-center justify-center text-white text-[9px] sm:text-[10px]">✓</span>
+                    <span className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-orange-500 flex items-center justify-center text-white text-[9px] sm:text-[10px] shadow-sm">✓</span>
                   )}
-                  <span className={cn("text-2xs sm:text-xs font-medium", activeCategory === cat.id && "text-orange-500")}>
+                  <span className={cn("text-[10px] sm:text-xs font-medium truncate max-w-full text-center leading-tight mt-0.5", activeCategory === cat.id && "text-orange-500")}>
                     {cat.name}
                   </span>
                 </button>
