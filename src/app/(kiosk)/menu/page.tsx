@@ -385,10 +385,13 @@ export default function MenuPage() {
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            updateQuantity(item.id, item.quantity - 1);
+                            if (item.quantity <= 1) {
+                              removeItem(item.id);
+                            } else {
+                              updateQuantity(item.id, item.quantity - 1);
+                            }
                           }}
-                          className="bg-orange-500 text-white p-1 sm:p-1.5 kiosk-tap hover:bg-orange-600 disabled:opacity-50"
-                          disabled={item.quantity <= 1}
+                          className="bg-orange-500 text-white p-1 sm:p-1.5 kiosk-tap hover:bg-orange-600"
                           aria-label="Decrease quantity"
                           title="Decrease quantity"
                         >
@@ -568,13 +571,13 @@ export default function MenuPage() {
               isDark ? "bg-zinc-900 border border-zinc-700" : "bg-white border border-gray-100"
             )}
           >
-            {/* Header - burger icon with light orange bg + orange outline */}
+            {/* Header - burger icon with project orange */}
             <div className={cn("flex items-center justify-between p-5 shrink-0", isDark ? "border-b border-zinc-700" : "border-b border-gray-100")}>
               <div className="flex items-center gap-3 min-w-0">
                 <div
                   className={cn(
                     "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 overflow-hidden border-2",
-                    isDark ? "bg-zinc-800 border-orange-500" : "bg-[#FFECD7] border-[#FF9F43]"
+                    isDark ? "bg-zinc-800 border-orange-500" : "bg-orange-100 border-orange-500"
                   )}
                 >
                   <Image src="/assets/images/burger.svg" alt="" width={24} height={24} />
@@ -611,7 +614,7 @@ export default function MenuPage() {
                         sizeOption === size
                           ? isDark
                             ? "bg-orange-500 border-orange-400 text-white"
-                            : "bg-[#FFF8F1] border-2 border-[#FF9F43]"
+                            : "bg-orange-500/10 border-2 border-orange-500"
                           : isDark
                             ? "bg-zinc-800 border-zinc-600 text-white hover:bg-zinc-700"
                             : "bg-white border-gray-200 text-gray-900 hover:bg-gray-50 shadow-sm"
@@ -638,7 +641,7 @@ export default function MenuPage() {
                           isSelected
                             ? isDark
                               ? "bg-orange-500 border-orange-400 text-white"
-                              : "bg-[#FFF8F1] border-2 border-[#FF9F43]"
+                              : "bg-orange-500/10 border-2 border-orange-500"
                             : isDark
                               ? "bg-zinc-800 border-zinc-600 text-white hover:bg-zinc-700"
                               : "bg-white border-gray-200 text-gray-900 hover:bg-gray-50 shadow-sm"
@@ -661,7 +664,7 @@ export default function MenuPage() {
                   <div className="flex rounded-xl overflow-hidden border-2 border-orange-500">
                     <button
                       type="button"
-                      className="bg-[#FF9F43] text-white p-2.5 kiosk-tap hover:opacity-90"
+                      className="bg-orange-500 text-white p-2.5 kiosk-tap hover:bg-orange-600"
                       onClick={() => setCustomizeQty((q) => q + 1)}
                       aria-label="Increase quantity"
                     >
@@ -672,7 +675,7 @@ export default function MenuPage() {
                     </span>
                     <button
                       type="button"
-                      className="bg-[#FF9F43] text-white p-2.5 kiosk-tap hover:opacity-90 disabled:opacity-50"
+                      className="bg-orange-500 text-white p-2.5 kiosk-tap hover:bg-orange-600 disabled:opacity-50"
                       onClick={() => setCustomizeQty((q) => Math.max(1, q - 1))}
                       disabled={customizeQty <= 1}
                       aria-label="Decrease quantity"
@@ -684,7 +687,7 @@ export default function MenuPage() {
                 <button
                   type="button"
                   onClick={handleAddToOrder}
-                  className="rounded-xl bg-[#FF9F43] px-6 py-3.5 font-semibold text-base text-white hover:opacity-90 kiosk-tap whitespace-nowrap"
+                  className="rounded-xl bg-orange-500 px-6 py-3.5 font-semibold text-base text-white hover:bg-orange-600 kiosk-tap whitespace-nowrap"
                 >
                   Add Item | ₹{customizeTotal.toFixed(0)}
                 </button>
