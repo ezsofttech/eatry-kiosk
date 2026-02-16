@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { I18nProvider } from "@/components/providers/I18nProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -31,7 +32,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="font-sans min-h-screen antialiased overflow-x-hidden">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+        <I18nProvider>{children}</I18nProvider>
+      </ThemeProvider>
       </body>
     </html>
   );

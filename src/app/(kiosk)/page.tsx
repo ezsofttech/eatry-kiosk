@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useI18n } from "next-localization";
 import { useRef, useCallback, useState, useEffect } from "react";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { ChevronRight, Check, Hand } from "lucide-react";
@@ -12,6 +13,7 @@ const TAP_THRESHOLD = 5;
 
 export default function KioskHomePage() {
   const router = useRouter();
+  const i18n = useI18n();
   const { resolved } = useThemeStore();
   const isDark = resolved === "dark";
   const trackRef = useRef<HTMLDivElement>(null);
@@ -169,10 +171,10 @@ export default function KioskHomePage() {
   const progressPercent = maxDrag > 0 ? Math.round((dragOffset / maxDrag) * 100) : 0;
   
   const swipeText = isComplete 
-    ? "Order Now! 🎉" 
+    ? i18n.t("orderNow") 
     : isSwiping 
-      ? `Release to Order (${progressPercent}%)`
-      : "Swipe right to order";
+      ? `${i18n.t("releaseToOrder")} (${progressPercent}%)`
+      : i18n.t("swipeRightToOrder");
 
   const BUTTON_LEFT = 8; // left-2 = 8px
   const fillWidth = isComplete ? trackWidth : BUTTON_LEFT + BUTTON_SIZE + dragOffset;
@@ -180,18 +182,19 @@ export default function KioskHomePage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-7rem)] px-3 sm:px-4 pt-10 sm:pt-14 laptop:pt-16">
-      <p className="text-lg sm:text-xl font-bold text-orange-500 mb-2 sm:mb-3">Eatry Cloud</p>
+      <p className="text-lg sm:text-xl font-bold text-orange-500 mb-2 sm:mb-3">{i18n.t("appName")}</p>
       <div className="flex items-center gap-2 mb-4 sm:mb-6">
         <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-red-500" />
         <span className="text-xs sm:text-sm font-medium tracking-widest text-gray-500 dark:text-gray-400">
-          FRESHLY MADE • EVERY DAY
+          {i18n.t("tagline")}
         </span>
       </div>
       <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center max-w-2xl mb-2 sm:mb-4">
-        Are you <span className="text-orange-500">Hungry?</span>
+        {i18n.t("homeHungryPrefix")}
+        <span className="text-orange-500">{i18n.t("homeHungryHighlight")}</span>
       </h1>
       <p className="text-sm sm:text-base md:text-lg text-gray-500 dark:text-gray-400 text-center mb-8 sm:mb-10 md:mb-12">
-        Freshly prepared, just how you like it.
+        {i18n.t("homeSubtitle")}
       </p>
 
       <div className="w-full max-w-sm sm:max-w-md flex flex-col items-center gap-2 sm:gap-3">
@@ -199,7 +202,7 @@ export default function KioskHomePage() {
         {!isSwiping && !isComplete && (
           <div className="flex items-center gap-4 text-orange-500 text-sm sm:text-base font-medium mb-2 animate-slide-in-feedback">
             <Hand className="w-4 h-4 sm:w-5 sm:h-5 animate-swipe-arrow" />
-            <span>Swipe to order</span>
+            <span>{i18n.t("swipeToOrder")}</span>
           </div>
         )}
 
@@ -291,7 +294,7 @@ export default function KioskHomePage() {
         {isSwiping && !isComplete && (
           <div className="flex items-center justify-center gap-1 text-xs sm:text-sm font-medium text-orange-600 dark:text-orange-400 animate-slide-in-feedback">
             <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse" />
-            <span>{progressPercent}% complete</span>
+            <span>{progressPercent}% {i18n.t("completePercent")}</span>
           </div>
         )}
       </div>

@@ -2,12 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useI18n } from "next-localization";
 import { useKioskStore } from "@/stores/useKioskStore";
 import { useCartStore } from "@/stores/useCartStore";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { cn } from "@/lib/utils";
 
 export default function OrderTypePage() {
+  const i18n = useI18n();
   const { setOrderType } = useKioskStore();
   const { setOrderType: setCartOrderType, setTableNumber, clearCart } = useCartStore();
   const { resolved } = useThemeStore();
@@ -28,11 +30,11 @@ export default function OrderTypePage() {
       <div className="flex items-center gap-2 mb-6 sm:mb-8">
         <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-red-500" />
         <span className="text-xs sm:text-sm font-medium tracking-widest text-gray-500 dark:text-gray-400">
-          FRESHLY MADE • EVERY DAY
+          {i18n.t("tagline")}
         </span>
       </div>
       <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-6 sm:mb-8 md:mb-10 max-w-2xl px-2">
-        Where would you like to enjoy your order?
+        {i18n.t("orderTypeTitle")}
       </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 md:gap-6 w-full max-w-2xl mb-6 sm:mb-8 px-2">
         <Link
@@ -50,8 +52,8 @@ export default function OrderTypePage() {
             height={80}
             className="mb-3 sm:mb-4 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24"
           />
-          <span className="text-lg sm:text-2xl font-bold">DINE-IN</span>
-          <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 sm:mt-2">At your Table</span>
+          <span className="text-lg sm:text-2xl font-bold">{i18n.t("dineIn")}</span>
+          <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 sm:mt-2">{i18n.t("dineInDesc")}</span>
         </Link>
         <Link
           href="/menu"
@@ -68,8 +70,8 @@ export default function OrderTypePage() {
             height={80}
             className="mb-3 sm:mb-4 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24"
           />
-          <span className="text-lg sm:text-2xl font-bold">TAKEAWAY</span>
-          <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 sm:mt-2">Packaged to go</span>
+          <span className="text-lg sm:text-2xl font-bold">{i18n.t("takeaway")}</span>
+          <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 sm:mt-2">{i18n.t("takeawayDesc")}</span>
         </Link>
       </div>
       <Link
@@ -79,7 +81,7 @@ export default function OrderTypePage() {
           cardClass
         )}
       >
-        Cancel
+        {i18n.t("cancel")}
       </Link>
     </div>
   );
