@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useKioskStore } from "@/stores/useKioskStore";
 import { useCartStore } from "@/stores/useCartStore";
+import { useKitchenStore } from "@/stores/useKitchenStore";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { Check, Clock, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -13,13 +14,26 @@ export default function SuccessPage() {
   const router = useRouter();
   const [countdown, setCountdown] = useState(15);
   const { orderId, paymentMethod, resetOrder } = useKioskStore();
-  const { clearCart } = useCartStore();
+  const { items, orderType, tableNumber, clearCart } = useCartStore();
+  const { addOrder } = useKitchenStore();
   const { resolved } = useThemeStore();
   const isDark = resolved === "dark";
+  const sentToKitchen = useRef(false);
 
   useEffect(() => {
+    if (sentToKitchen.current) return;
+    if (items.length > 0 && orderId) {
+      const displayId = orderId.startsWith("#") ? orderId : `#${orderId}`;
+      addOrder({
+        orderId: displayId,
+        type: orderType === "delivery" ? "takeaway" : orderType,
+        tableNumber,
+        items: items.map((i) => ({ ...i })),
+      });
+      sentToKitchen.current = true;
+    }
     clearCart();
-  }, [clearCart]);
+  }, [items.length, orderId, orderType, tableNumber, addOrder, clearCart]);
 
   useEffect(() => {
     if (countdown <= 0) {
