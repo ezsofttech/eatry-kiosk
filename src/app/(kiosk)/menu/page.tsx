@@ -136,7 +136,7 @@ export default function MenuPage() {
       <div className="flex-1 flex flex-col min-h-0 p-2 sm:p-3 md:px-4 md:pt-4 md:pb-0 lg:px-4 lg:pt-4 lg:pb-0 laptop:px-5 laptop:pt-5 laptop:pb-0 overflow-hidden">
         <div className="max-w-6xl mx-auto flex flex-col flex-1 min-h-0 w-full">
           {/* Fixed: Search, Categories, Filters */}
-          <div className="shrink-0">
+          <div className="shrink-0 pt-8 sm:pt-0">
             <div
               className={cn(
                 "rounded-lg sm:rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 mb-3 sm:mb-4 flex items-center gap-2",
