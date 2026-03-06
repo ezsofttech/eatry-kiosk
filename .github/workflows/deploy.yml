@@ -5,73 +5,70 @@ on:
     branches:
       - main
   workflow_dispatch:
-    inputs:
-      region:
-        description: 'AWS Region to deploy to'
-        required: true
-        default: 'ap-south-1'
-        type: choice
-        options:
-          - ap-south-1
-          - ap-south-1
 
 env:
-  AWS_REGION: ${{ github.event.inputs.region || 'ap-south-1' }}
-  ECR_REPOSITORY: eatry-production-kiosk
-  ECS_SERVICE: eatry-production-kiosk
-  ECS_CLUSTER: eatry-production-cluster
+  ECR_ACCOUNT_ID: 715923838341
+  ECR_REPO_NAME: eatry-production-kiosk
+  IMAGE_NAME: eatry-production-kiosk
+  ECS_CLUSTER_NAME: eatry-production-cluster
+  ECS_SERVICE_NAME: eatry-production-kiosk
+  CLOUDWATCH_LOG_GROUP: /aws/ecs/eatry/eatry-production-kiosk-tg
 
-permissions:
-  id-token: write
-  contents: read
+  # UAE — me-central-1
+  AWS_REGION_UAE: me-central-1
+
+  # India (Mumbai) — ap-south-1
+  AWS_REGION_INDIA: ap-south-1
 
 jobs:
-  deploy:
-    name: Deploy
+  build-and-deploy:
+    name: Build and Deploy to ECS (UAE + India)
     runs-on: ubuntu-latest
-    environment: production
+    if: github.event.repository.fork == false
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
+      # ── Build Docker image once ────────────────────────────────────────────
+      - name: Build Docker image
+        run: |
+          docker build \
+            --platform linux/amd64 \
+            -t ${{ env.IMAGE_NAME }}:latest .
+
+      # ── UAE (me-central-1) ────────────────────────────────────────────────
+      # (UAE steps are intentionally commented out — deployments will run to India)
+
+      # ── India / Mumbai (ap-south-1) ───────────────────────────────────────
+      - name: Configure AWS credentials (India)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::141095608234:role/eatry-production-github-actions-role
-          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION_INDIA }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
+      - name: Create CloudWatch Log Group (India)
+        run: |
+          aws logs create-log-group \
+            --log-group-name "${{ env.CLOUDWATCH_LOG_GROUP }}" \
+            --region ${{ env.AWS_REGION_INDIA }} || true
+
+      - name: Login to Amazon ECR (India)
         uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build, tag, and push image to Amazon ECR
-        id: build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-
-      - name: Download current task definition
-        run: |
-          aws ecs describe-task-definition --task-definition ${{ env.ECS_SERVICE }} \
-          --query taskDefinition > task-definition.json
-
-      - name: Fill in the new image ID in the Amazon ECS task definition
-        id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: task-definition.json
-          container-name: kiosk
-          image: ${{ steps.build-image.outputs.image }}
+          registries: ${{ env.ECR_ACCOUNT_ID }}
 
-      - name: Deploy Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-        with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ env.ECS_SERVICE }}
-          cluster: ${{ env.ECS_CLUSTER }}
-          wait-for-service-stability: true
+      - name: Push image to ECR (India)
+        run: |
+          IMAGE_URI=${{ env.ECR_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION_INDIA }}.amazonaws.com/${{ env.ECR_REPO_NAME }}:latest
+          docker tag ${{ env.IMAGE_NAME }}:latest $IMAGE_URI
+          docker push $IMAGE_URI
+
+      - name: Deploy to ECS (India)
+        run: |
+          aws ecs update-service \
+            --cluster ${{ env.ECS_CLUSTER_NAME }} \
+            --service ${{ env.ECS_SERVICE_NAME }} \
+            --force-new-deployment \
+            --region ${{ env.AWS_REGION_INDIA }}
