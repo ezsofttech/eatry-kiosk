@@ -47,8 +47,8 @@ ARG NEXT_PUBLIC_API_BASE_URL=https://api.myhrmscloud.com
 ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
 
 # Set environment variables for build
-ENV NEXT_TELEMETRY_DISABLED 1
-ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
 
 # Build the application
 RUN npm run build
@@ -60,8 +60,8 @@ WORKDIR /app
 # Install wget for health checks
 RUN apk add --no-cache wget
 
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
 # Don't run as root
 RUN addgroup --system --gid 1001 nodejs
@@ -83,8 +83,8 @@ USER nextjs
 
 EXPOSE 3000
 
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
 # Health check - use dedicated /health endpoint (same as ELB target group)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \

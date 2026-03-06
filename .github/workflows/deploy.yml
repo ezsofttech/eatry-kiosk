@@ -49,10 +49,11 @@ jobs:
           aws-region: ${{ env.AWS_REGION_INDIA }}
 
       - name: Create CloudWatch Log Group (India)
+        continue-on-error: true
         run: |
           aws logs create-log-group \
             --log-group-name "${{ env.CLOUDWATCH_LOG_GROUP }}" \
-            --region ${{ env.AWS_REGION_INDIA }} || true
+            --region ${{ env.AWS_REGION_INDIA }}
 
       - name: Login to Amazon ECR (India)
         uses: aws-actions/amazon-ecr-login@v2
