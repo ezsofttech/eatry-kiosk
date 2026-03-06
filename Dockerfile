@@ -19,15 +19,22 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+COPY package*.json pnpm-lock.yaml* yarn.lock* ./
 # Install dependencies
-RUN npm ci --only=production && npm cache clean --force
+RUN if [ -f pnpm-lock.yaml ]; then \
+		corepack enable && corepack prepare pnpm@latest --activate && pnpm install --frozen-lockfile --prod; \
+	elif [ -f yarn.lock ]; then \
+		corepack enable && corepack prepare yarn@stable --activate && yarn install --frozen-lockfile --production; \
+	elif [ -f package-lock.json ]; then \
+		npm install --omit=dev --legacy-peer-deps; \
+	else \
+		npm install --omit=dev; \
+	fi
 
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
-COPY package*.json ./
+COPY package*.json pnpm-lock.yaml* yarn.lock* ./
 # Install build-time tools and all dependencies (including dev dependencies)
 RUN apk add --no-cache python3 build-base git \
 	&& if [ -f pnpm-lock.yaml ]; then \
@@ -35,7 +42,7 @@ RUN apk add --no-cache python3 build-base git \
 		 elif [ -f yarn.lock ]; then \
 			 corepack enable && corepack prepare yarn@stable --activate && yarn install --frozen-lockfile; \
 		 elif [ -f package-lock.json ]; then \
-			 npm ci; \
+			 npm install --legacy-peer-deps; \
 		 else \
 			 npm install; \
 		 fi
