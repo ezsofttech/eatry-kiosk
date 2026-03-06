@@ -73,3 +73,7 @@ jobs:
             --service ${{ env.ECS_SERVICE_NAME }} \
             --force-new-deployment \
             --region ${{ env.AWS_REGION_INDIA }}
+          aws ecs wait services-stable \
+            --cluster ${{ env.ECS_CLUSTER_NAME }} \
+            --services ${{ env.ECS_SERVICE_NAME }} \
+            --region ${{ env.AWS_REGION_INDIA }}
