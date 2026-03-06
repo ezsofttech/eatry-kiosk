@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  ECR_ACCOUNT_ID: 715923838341
+  ECR_ACCOUNT_ID: 141095608234
   ECR_REPO_NAME: eatry-production-kiosk
   IMAGE_NAME: eatry-production-kiosk
   ECS_CLUSTER_NAME: eatry-production-cluster
