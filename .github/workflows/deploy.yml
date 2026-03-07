@@ -1,79 +1,60 @@
-name: Deploy to Amazon ECS
+name: Deploy eatry-kiosk (Next.js)
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 env:
-  ECR_ACCOUNT_ID: 141095608234
-  ECR_REPO_NAME: eatry-production-kiosk
-  IMAGE_NAME: eatry-production-kiosk
-  ECS_CLUSTER_NAME: eatry-production-cluster
-  ECS_SERVICE_NAME: eatry-production-kiosk
-  CLOUDWATCH_LOG_GROUP: /aws/ecs/eatry/eatry-production-kiosk-tg
-
-  # UAE — me-central-1
-  AWS_REGION_UAE: me-central-1
-
-  # India (Mumbai) — ap-south-1
-  AWS_REGION_INDIA: ap-south-1
+  AWS_REGION: ap-south-1
+  ECR_REPOSITORY: eatry-production-kiosk
+  ECS_CLUSTER: eatry-production-cluster
+  ECS_SERVICE: eatry-production-kiosk
 
 jobs:
-  build-and-deploy:
-    name: Build and Deploy to ECS (UAE + India)
+  deploy:
+    name: Build & Deploy
     runs-on: ubuntu-latest
-    if: github.event.repository.fork == false
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # ── Build Docker image once ────────────────────────────────────────────
-      - name: Build Docker image
-        run: |
-          docker build \
-            --platform linux/amd64 \
-            -t ${{ env.IMAGE_NAME }}:latest .
-
-      # ── UAE (me-central-1) ────────────────────────────────────────────────
-      # (UAE steps are intentionally commented out — deployments will run to India)
-
-      # ── India / Mumbai (ap-south-1) ───────────────────────────────────────
-      - name: Configure AWS credentials (India)
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION_INDIA }}
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: Create CloudWatch Log Group (India)
-        continue-on-error: true
-        run: |
-          aws logs create-log-group \
-            --log-group-name "${{ env.CLOUDWATCH_LOG_GROUP }}" \
-            --region ${{ env.AWS_REGION_INDIA }}
-
-      - name: Login to Amazon ECR (India)
+      - name: Login to Amazon ECR
+        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-        with:
-          registries: ${{ env.ECR_ACCOUNT_ID }}
 
-      - name: Push image to ECR (India)
+      - name: Build, tag, and push image to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
         run: |
-          IMAGE_URI=${{ env.ECR_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION_INDIA }}.amazonaws.com/${{ env.ECR_REPO_NAME }}:latest
-          docker tag ${{ env.IMAGE_NAME }}:latest $IMAGE_URI
-          docker push $IMAGE_URI
+          docker build \
+            --build-arg NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }} \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+            .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
-      - name: Deploy to ECS (India)
+      - name: Force ECS service redeployment
         run: |
           aws ecs update-service \
-            --cluster ${{ env.ECS_CLUSTER_NAME }} \
-            --service ${{ env.ECS_SERVICE_NAME }} \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --service ${{ env.ECS_SERVICE }} \
             --force-new-deployment \
-            --region ${{ env.AWS_REGION_INDIA }}
+            --region ${{ env.AWS_REGION }}
+
+      - name: Wait for service stability
+        run: |
           aws ecs wait services-stable \
-            --cluster ${{ env.ECS_CLUSTER_NAME }} \
-            --services ${{ env.ECS_SERVICE_NAME }} \
-            --region ${{ env.AWS_REGION_INDIA }}
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --services ${{ env.ECS_SERVICE }} \
+            --region ${{ env.AWS_REGION }}
